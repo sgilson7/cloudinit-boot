@@ -12,7 +12,7 @@ When a Linux VM starts up, there are a few steps that occur before cloud-init be
 With the different init systems available on different Linux distros, there is not one consistent way to get timestamps. We will outline how it can be done in the most popular init system, systemd.
 <br />In order to gather the necessary timestamps using systemd, one can run the commands
 <br />systemctl show -p UserspaceTimestampMonotonic  
-<br />systemctl show clout-init-local -p InactiveExitTimestampMonotonic
+systemctl show clout-init-local -p InactiveExitTimestampMonotonic
 <br />to gather the UserSpaceTimestamp and InactiveExitTimestamp. The UserSpaceTimestamp is tracks when the UserSpace has been created, which marks the end of the kernel boot. The InactiveExitTimestamp tracks when the system goes into InactiveExit, marking the beginning of cloud-init’s provisioning. Both timestamps begin counting when the kernel boots, so all it takes to get the times we want is some simple arithmetic. To get the time at which the kernel boots, one can use
 <br />kernel_boot = time.time() – cloudinit.util.uptime()
 <br />in order to get the timestamp. Util.uptime() tracks when the first signal is received to start boot, so subtracting that from the current time would provide you the time stamp for kernel boot. Therefore, end of kernel boot would be
