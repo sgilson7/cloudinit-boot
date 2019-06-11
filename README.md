@@ -1,5 +1,4 @@
-# cloudinit-boot
-Cloud-init Analyze Module Kernel Telemetry Changes
+# Cloud-init Analyze Module Kernel Telemetry Changes
 Sam Gilson, Anh Vo, Hariharan Jayaraman
 
 # Overview:
