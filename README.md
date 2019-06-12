@@ -11,14 +11,14 @@ Currently, it is not convenient for non-experts to gather the data necessary to 
 When a Linux VM starts up, there are a few steps that occur before cloud-init begins to provision. Kernel Initialization occurs first, begins when StartContainer finishes, and ends when boot kernel phase completes. User-space Initialization then occurs, which is the remaining time between end of kernel boot and beginning of cloud-init provisioning. Based on the init system being used, different processes will be started in different orders based on dependencies, with the process we want to track being cloud-init. Once cloud-init begins provisioning, it will emit an event to the cloud-init logs that we can obtain. 
 With the different init systems available on different Linux distros, there is not one consistent way to get timestamps. We will outline how it can be done in the most popular init system, systemd.
 <br />In order to gather the necessary timestamps using systemd, one can run the commands
-<br />systemctl show -p UserspaceTimestampMonotonic  
-systemctl show clout-init-local -p InactiveExitTimestampMonotonic
+<br />**systemctl show -p UserspaceTimestampMonotonic**  
+**systemctl show cloud-init-local -p InactiveExitTimestampMonotonic**
 <br />to gather the UserSpaceTimestamp and InactiveExitTimestamp. The UserSpaceTimestamp is tracks when the UserSpace has been created, which marks the end of the kernel boot. The InactiveExitTimestamp tracks when the system goes into InactiveExit, marking the beginning of cloud-init’s provisioning. Both timestamps begin counting when the kernel boots, so all it takes to get the times we want is some simple arithmetic. To get the time at which the kernel boots, one can use
-<br />kernel_boot = time.time() – cloudinit.util.uptime()
+<br />**kernel_boot = time.time() – cloudinit.util.uptime()**
 <br />in order to get the timestamp. Util.uptime() tracks when the first signal is received to start boot, so subtracting that from the current time would provide you the time stamp for kernel boot. Therefore, end of kernel boot would be
-<br />kernel_finish_boot = kernel_boot + UserSpaceTimeStampMonotonic
+<br />**kernel_finish_boot = kernel_boot + UserSpaceTimeStampMonotonic**
 <br />and beginning of cloud-init provisioning would be
-<br />cloud-init_start = kernel_boot + InactiveExitTimestampMonotonic
+<br />**cloud-init_start = kernel_boot + InactiveExitTimestampMonotonic**
 
 # Changes to cloud-init analyze module:
 In cloud-init analyze, there are currently 3 different options on how to analyze the clout-init.log that is created by cloud-init at runtime. The first is blame, which orders the timestamps by how long each action that was logged took. The second is show, which presents them in chronological order. The third is dump, which simply dumps the entire log file for you to view. In order to access these functionalites, the user can issue the command:
